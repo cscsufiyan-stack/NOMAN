@@ -1,0 +1,2586 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#ffbf00">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="manifest" href="./manifest.json">
+    <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+    <link rel="apple-touch-icon" href="./icon-192.png">
+    <title>NOMAN APPS</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; background: #f5f7fb; padding-bottom: 85px; }
+        .app-main { max-width: 500px; margin: 0 auto; background: #ffffff; min-height: 100vh; position: relative; box-shadow: 0 0 20px rgba(0,0,0,0.05); }
+        
+        .premium-banner {
+            position: relative;
+            width: 100%;
+            height: 160px;
+            background: linear-gradient(135deg, #001959 0%, #002d8a 45%, #004cb5 70%, #001959 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: #ffffff;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            border-radius: 0 0 30px 30px;
+        }
+        .main-title {
+            font-size: 1.6rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+            text-shadow: 0px 4px 12px rgba(0, 0, 0, 0.4);
+        }
+        .gold-divider {
+            width: 160px;
+            height: 1.5px;
+            background: linear-gradient(90deg, transparent, #dfad47 20%, #ffd97d 50%, #dfad47 80%, transparent);
+            margin-bottom: 8px;
+        }
+        .tagline {
+            font-size: 0.7rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255, 255, 255, 0.95);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .gold-dot { color: #dfad47; }
+        .install-app-btn {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            margin-top: 10px;
+            padding: 8px 18px;
+            border: 1px solid rgba(255,255,255,.75);
+            border-radius: 30px;
+            color: #111827;
+            background: linear-gradient(135deg, #fff3a6, #ffbf00);
+            font-size: 13px;
+            font-weight: 800;
+            box-shadow: 0 4px 12px rgba(0,0,0,.18);
+            cursor: pointer;
+        }
+        .install-app-btn:active { transform: scale(.97); }
+        .install-app-hint {
+            display: none;
+            margin: 8px auto 0;
+            max-width: 300px;
+            font-size: 11px;
+            line-height: 1.4;
+            color: #fff;
+        }
+        .curve-wrapper {
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            overflow: hidden;
+            line-height: 0;
+            z-index: 1;
+        }
+        .curve-wrapper svg {
+            position: relative;
+            display: block;
+            width: 100%;
+            height: 30px;
+        }
+        .curve-fill { fill: #ffffff; }
+        .curve-gold-stroke { stroke: #dfad47; stroke-width: 1.5px; fill: none; }
+        .curve-white-stroke { stroke: #ffffff; stroke-width: 1px; fill: none; }
+        
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            max-width: 500px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(20px);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 8px 16px 20px;
+            border-top: 1px solid rgba(223, 173, 71, 0.3);
+            z-index: 100;
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.05);
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            font-size: 10px;
+            font-weight: 500;
+            color: #94a3b8;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            padding: 4px 10px;
+            border-radius: 40px;
+        }
+        .nav-item span:first-child { font-size: 22px; transition: transform 0.2s ease; display: inline-block; }
+        .nav-item span:last-child { font-size: 10px; letter-spacing: 0.3px; font-weight: 500; }
+        .nav-item.active { color: #001B7A; background: rgba(0, 25, 89, 0.08); transform: translateY(-2px); }
+        .nav-item.active span:first-child { transform: scale(1.05); }
+        
+        .screen { display: none; padding: 20px 12px 80px; animation: fade 0.15s ease; }
+        .screen.active-screen { display: block; }
+        @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+        
+        .search-bar { background: #f1f5f9; border-radius: 30px; padding: 12px 18px; display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+        .search-bar input { background: none; border: none; flex: 1; font-size: 15px; outline: none; }
+        .category-chips { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 16px; margin-bottom: 8px; white-space: nowrap; }
+        .chip { background: #f1f5f9; padding: 8px 20px; border-radius: 40px; font-size: 14px; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: 0.1s; }
+        .chip.active { background: #dbeafe; color: #1e3a8a; }
+        .chip .delete-chip { background: none; border: none; cursor: pointer; font-size: 11px; opacity: 0.6; margin-left: 4px; color: inherit; }
+        
+        .products-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px; }
+        .product-card { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.08); cursor: pointer; transition: all 0.2s ease; }
+        .product-card:active { transform: scale(0.98); }
+        .product-image-container { width: 100%; height: 150px; background: #f8fafc; display: flex; align-items: center; justify-content: center; }
+        .product-image { max-width: 100%; max-height: 100%; object-fit: contain; }
+        .no-image-icon { font-size: 48px; color: #cbd5e1; }
+        .product-info { padding: 12px; text-align: center; }
+        .product-name { font-weight: 700; font-size: 14px; color: #1e293b; margin-bottom: 8px; }
+        .price-row { font-size: 11px; color: #334155; margin: 4px 0; display: flex; justify-content: center; gap: 6px; flex-wrap: wrap; }
+        .price-row span { background: #f1f5f9; padding: 2px 8px; border-radius: 20px; }
+        .sell-price-large { font-weight: 800; color: #001959; font-size: 20px; margin: 6px 0 2px; }
+        
+        .stock-list-container { display: flex; flex-direction: column; gap: 16px; }
+        .stock-item {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 16px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+            border: 1px solid #eef2f6;
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+        .stock-image-thumb {
+            flex-shrink: 0;
+            width: 70px;
+            height: 70px;
+            background: #f8fafc;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .stock-image-thumb img { width: 100%; height: 100%; object-fit: cover; }
+        .stock-image-thumb span { font-size: 36px; opacity: 0.5; }
+        .stock-info-block { flex: 1; }
+        .stock-name { font-size: 18px; font-weight: 700; color: #0f172a; margin-bottom: 8px; }
+        .stock-price-detail { font-size: 12px; color: #334155; margin: 4px 0; line-height: 1.5; }
+        .stock-price-detail strong { color: #001959; }
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 12px;
+        }
+        .action-buttons button {
+            background: #f8fafc;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 40px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: 0.1s;
+        }
+        .action-buttons button:active { transform: scale(0.96); }
+        .btn-edit-action { background: #fff3e3; color: #b45309; }
+        .btn-delete-action { background: #fee2e2; color: #b91c1c; }
+        
+        /* ===== CALCULATOR ===== */
+        .simple-calc-section {
+            background: #f8fafc;
+            border-radius: 24px;
+            padding: 16px;
+            margin: 12px 0;
+            border: 1px solid #e2e8f0;
+        }
+        .calc-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .calc-header h4 {
+            font-size: 16px;
+            color: #0f172a;
+            font-weight: 700;
+        }
+        .calc-header .badge {
+            background: linear-gradient(135deg, #001959, #dfad47);
+            color: white;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+        .calc-display {
+            background: white;
+            padding: 10px 14px;
+            border-radius: 12px;
+            border: 2px solid #001959;
+            font-size: 20px;
+            font-weight: 700;
+            text-align: right;
+            color: #0f172a;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            margin-bottom: 10px;
+            font-family: monospace;
+            overflow: hidden;
+            background: #f8faff;
+        }
+        .calc-display .expr { opacity: 0.6; font-weight: 400; font-size: 14px; margin-right: 10px; }
+        .calc-display .result { color: #001959; font-size: 24px; }
+        .calc-display .error { color: #ef4444; }
+        
+        .calc-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .calc-btn {
+            padding: 12px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 12px;
+            background: white;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.1s;
+            color: #0f172a;
+        }
+        .calc-btn:active { transform: scale(0.95); background: #f1f5f9; }
+        .calc-btn.operator { background: #eef2ff; border-color: #c7d2fe; color: #001959; }
+        .calc-btn.operator:active { background: #dbeafe; }
+        .calc-btn.equals { background: linear-gradient(135deg, #001959, #002d8a); color: white; border-color: #001959; }
+        .calc-btn.equals:active { opacity: 0.8; }
+        .calc-btn.clear { background: #fee2e2; border-color: #fca5a5; color: #991b1b; }
+        .calc-btn.clear:active { background: #fecaca; }
+        .calc-btn.del { background: #f59e0b; border-color: #d97706; color: white; }
+        .calc-btn.del:active { background: #d97706; }
+        
+        .note-textarea {
+            width: 100%;
+            min-height: 80px;
+            padding: 10px 12px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+            background: white;
+            transition: 0.2s;
+            margin-top: 10px;
+        }
+        .note-textarea:focus {
+            border-color: #001959;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 25, 89, 0.1);
+        }
+        
+        /* ===== PHOTO UPLOAD WITH NAME ===== */
+        .note-image-upload {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 10px;
+            padding: 12px;
+            background: white;
+            border-radius: 14px;
+            border: 1.5px dashed #cbd5e1;
+            transition: 0.2s;
+        }
+        .note-image-upload:hover { border-color: #001959; background: #f8faff; }
+        .note-image-upload .upload-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .note-image-upload .upload-row label {
+            font-size: 12px;
+            color: #475569;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+        .note-image-upload .upload-row input[type="file"] { display: none; }
+        .note-image-upload .upload-row .photo-name-input {
+            flex: 1;
+            padding: 6px 10px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 30px;
+            font-size: 12px;
+            background: #f8fafc;
+            transition: 0.2s;
+        }
+        .note-image-upload .upload-row .photo-name-input:focus {
+            border-color: #001959;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 25, 89, 0.1);
+        }
+        .note-image-upload .upload-row .photo-name-input::placeholder {
+            color: #cbd5e1;
+        }
+        .note-image-preview-wrap {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 4px;
+        }
+        .note-image-preview {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            object-fit: cover;
+            border: 1px solid #e2e8f0;
+        }
+        .note-image-preview-placeholder {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: #94a3b8;
+            border: 1px solid #e2e8f0;
+        }
+        .note-image-name-display {
+            font-size: 13px;
+            font-weight: 500;
+            color: #0f172a;
+        }
+        .note-image-remove {
+            background: none;
+            border: none;
+            color: #ef4444;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 0 4px;
+        }
+        
+        .note-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .note-actions button {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        .note-actions button:active { transform: scale(0.97); }
+        .btn-save-note { background: #001959; color: white; }
+        .btn-clear-note { background: #f1f5f9; color: #475569; }
+        
+        /* ===== SAVED NOTES ===== */
+        .saved-notes {
+            margin-top: 10px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        .saved-note-item {
+            background: white;
+            padding: 18px;
+            border-radius: 20px;
+            margin-bottom: 16px;
+            border: 1px solid #eef2f6;
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+        .saved-note-item .note-thumb {
+            width: 160px;
+            height: 160px;
+            border-radius: 18px;
+            object-fit: cover;
+            flex-shrink: 0;
+            background: #f1f5f9;
+            border: 2px solid #e2e8f0;
+        }
+        .saved-note-item .note-thumb-placeholder {
+            width: 160px;
+            height: 160px;
+            border-radius: 18px;
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+            flex-shrink: 0;
+            border: 2px solid #e2e8f0;
+        }
+        .saved-note-item .note-content {
+            flex: 1;
+            min-width: 0;
+        }
+        .saved-note-item .note-text-display {
+            font-size: 20px;
+            color: #0f172a;
+            word-wrap: break-word;
+            font-weight: 700;
+            line-height: 1.5;
+        }
+        .saved-note-item .note-photo-name {
+            font-size: 13px;
+            font-weight: 500;
+            color: #64748b;
+            margin-top: 4px;
+        }
+        .saved-note-item .note-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .saved-note-item .note-time {
+            font-size: 14px;
+            color: #94a3b8;
+        }
+        .saved-note-item .delete-note-btn {
+            background: none;
+            border: none;
+            color: #ef4444;
+            cursor: pointer;
+            font-size: 22px;
+            padding: 0 6px;
+        }
+        .saved-note-item .note-amount-badge {
+            font-size: 18px;
+            font-weight: 700;
+            color: #001959;
+            background: #eef2ff;
+            padding: 4px 20px;
+            border-radius: 24px;
+            display: inline-block;
+        }
+        
+        .kb-hint {
+            font-size: 10px;
+            color: #94a3b8;
+            text-align: center;
+            margin-top: 6px;
+            background: #f1f5f9;
+            padding: 4px;
+            border-radius: 20px;
+        }
+        
+        /* ===== TOGGLE SWITCH ===== */
+        .mode-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background: white;
+            padding: 6px 12px;
+            border-radius: 40px;
+            border: 1.5px solid #e2e8f0;
+            margin-bottom: 12px;
+        }
+        .mode-toggle span {
+            font-size: 12px;
+            font-weight: 600;
+            color: #94a3b8;
+            transition: 0.2s;
+        }
+        .mode-toggle span.active {
+            color: #001959;
+        }
+        .toggle-switch {
+            width: 50px;
+            height: 28px;
+            background: #cbd5e1;
+            border-radius: 30px;
+            cursor: pointer;
+            position: relative;
+            transition: 0.3s;
+        }
+        .toggle-switch.active {
+            background: linear-gradient(135deg, #001959, #002d8a);
+        }
+        .toggle-switch .toggle-knob {
+            width: 22px;
+            height: 22px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            transition: 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .toggle-switch.active .toggle-knob {
+            left: 25px;
+        }
+        
+        /* ===== CASH DENOMINATION ===== */
+        .denomination-section {
+            background: #f8fafc;
+            border-radius: 24px;
+            padding: 16px;
+            margin: 12px 0;
+            border: 1px solid #e2e8f0;
+            display: none;
+        }
+        .denomination-section.active {
+            display: block;
+        }
+        .denom-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .denom-header h4 {
+            font-size: 16px;
+            color: #0f172a;
+            font-weight: 700;
+        }
+        .denom-header .badge {
+            background: linear-gradient(135deg, #001959, #dfad47);
+            color: white;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+        .denom-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+        .denom-table th {
+            background: #eef2ff;
+            color: #001959;
+            padding: 8px 4px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 11px;
+        }
+        .denom-table td {
+            padding: 6px 3px;
+            text-align: center;
+            border-bottom: 1px solid #eef2f6;
+        }
+        .denom-table tr:last-child td { border-bottom: none; }
+        .denom-table .denom-label {
+            font-weight: 600;
+            color: #0f172a;
+            text-align: left;
+            padding-left: 6px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            white-space: nowrap;
+        }
+        .denom-table .denom-label .denom-icon {
+            width: 120px;
+            height: 70px;
+            object-fit: contain;
+            border-radius: 9px;
+            background: #f1f5f9;
+            padding: 3px;
+            border: 1px solid #e2e8f0;
+            flex-shrink: 0;
+        }
+        .denom-table .denom-label .denom-emoji {
+            font-size: 28px;
+            flex-shrink: 0;
+        }
+        .denom-table input[type="text"] {
+            width: 65px;
+            padding: 8px 2px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: 600;
+            background: white;
+            transition: 0.2s;
+        }
+        .denom-table input[type="text"]:focus {
+            border-color: #001959;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 25, 89, 0.1);
+        }
+        .denom-table input[type="text"]:focus-visible {
+            outline: 2px solid #001959;
+            outline-offset: 2px;
+        }
+        .denom-subtotal {
+            font-weight: 700;
+            color: #001959;
+            font-size: 15px;
+        }
+        .denom-total-box {
+            background: linear-gradient(135deg, #001959, #002d8a);
+            color: white;
+            padding: 14px 18px;
+            border-radius: 14px;
+            margin-top: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .denom-total-box .total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .denom-total-box .total-row .label {
+            font-size: 13px;
+            opacity: 0.8;
+        }
+        .denom-total-box .total-row .value {
+            font-size: 22px;
+            font-weight: 800;
+        }
+        .denom-total-box .total-row .value-small {
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .denom-total-box .total-row .grand-total {
+            font-size: 26px;
+            font-weight: 900;
+        }
+        .denom-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+            justify-content: center;
+        }
+        .denom-actions button {
+            flex: 1;
+            max-width: 200px;
+            padding: 8px;
+            border: none;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 11px;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        .denom-actions button:active { transform: scale(0.97); }
+        .btn-denom-reset { background: #f1f5f9; color: #475569; }
+        .btn-denom-share { background: #001959; color: white; }
+        .btn-denom-share:active { background: #002d8a; }
+        
+        .simple-calc-section.hidden {
+            display: none;
+        }
+        
+        .profile-stats { padding: 8px 0; }
+        .setting-row {
+            display: flex;
+            justify-content: space-between;
+            background: #f8fafc;
+            padding: 10px 14px;
+            border-radius: 20px;
+            margin: 8px 0;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .stats-row {
+            display: flex;
+            justify-content: space-between;
+            background: #eef2ff;
+            padding: 10px 16px;
+            border-radius: 20px;
+            margin: 12px 0;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        .stats-row:active { background: #d9e2ef; }
+        .stats-item { text-align: center; flex: 1; }
+        .stats-number { font-size: 20px; font-weight: 800; color: #001959; }
+        
+        /* ===== RECYCLE BIN ===== */
+        .recycle-section {
+            background: #fef2f2;
+            border-radius: 20px;
+            padding: 14px;
+            margin: 12px 0;
+            border: 1px solid #fca5a5;
+        }
+        .recycle-section .recycle-header {
+            font-size: 14px;
+            font-weight: 700;
+            color: #991b1b;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .recycle-section .recycle-header span { font-size: 18px; }
+        .recycle-item {
+            background: white;
+            padding: 8px 12px;
+            border-radius: 10px;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #fee2e2;
+            font-size: 13px;
+        }
+        .recycle-item .recycle-name { font-weight: 500; color: #0f172a; }
+        .recycle-item .recycle-time { font-size: 10px; color: #94a3b8; }
+        .recycle-item .recycle-actions {
+            display: flex;
+            gap: 6px;
+        }
+        .recycle-item .recycle-actions button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 2px 6px;
+            border-radius: 6px;
+            transition: 0.1s;
+        }
+        .recycle-item .recycle-actions button:active { transform: scale(0.9); }
+        .btn-restore-item { color: #15803d; }
+        .btn-restore-item:hover { background: #dcfce7; }
+        .btn-permanent-delete { color: #dc2626; }
+        .btn-permanent-delete:hover { background: #fee2e2; }
+        .recycle-empty {
+            text-align: center;
+            color: #94a3b8;
+            font-size: 13px;
+            padding: 12px;
+        }
+        .recycle-clear-all {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        .recycle-clear-all:active { transform: scale(0.97); }
+        
+        /* ============================================================ */
+        /* ===== PRODUCT DETAIL MODAL ===== */
+        /* ============================================================ */
+        .product-detail-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            z-index: 500;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            animation: fadeIn 0.25s ease;
+        }
+        .product-detail-modal.active {
+            display: flex;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .product-detail-card {
+            background: white;
+            border-radius: 28px;
+            max-width: 360px;
+            width: 100%;
+            padding: 28px 24px 24px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        .product-detail-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #001959, #dfad47, #001959);
+        }
+        .product-detail-image {
+            width: 100%;
+            height: 180px;
+            background: #f8fafc;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+        .product-detail-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        .product-detail-image .no-img {
+            font-size: 64px;
+            color: #cbd5e1;
+        }
+        .product-detail-name {
+            font-size: 22px;
+            font-weight: 800;
+            color: #0f172a;
+            text-align: center;
+            margin-bottom: 2px;
+            letter-spacing: -0.3px;
+        }
+        .product-detail-sub {
+            font-size: 13px;
+            font-weight: 500;
+            color: #94a3b8;
+            text-align: center;
+            margin-bottom: 4px;
+        }
+        .product-detail-category {
+            font-size: 12px;
+            font-weight: 600;
+            color: #64748b;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 16px;
+            background: #f1f5f9;
+            display: inline-block;
+            padding: 3px 18px;
+            border-radius: 20px;
+            margin-left: auto;
+            margin-right: auto;
+            width: fit-content;
+        }
+        .product-detail-divider {
+            border: none;
+            border-top: 1px solid #eef2f6;
+            margin: 14px 0;
+        }
+        .product-detail-prices {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 4px 0 20px;
+        }
+        .product-detail-price-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 16px;
+            border-radius: 14px;
+            background: #f8fafc;
+            border: 1px solid #eef2f6;
+        }
+        .product-detail-price-row .label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #475569;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .product-detail-price-row .label .icon {
+            font-size: 18px;
+        }
+        .product-detail-price-row .value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+        .product-detail-price-row .value.purchase { color: #dc2626; }
+        .product-detail-price-row .value.selling { color: #16a34a; }
+        .product-detail-price-row .value.mrp { color: #94a3b8; text-decoration: line-through; }
+        .product-detail-close-btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 40px;
+            background: linear-gradient(135deg, #001959, #002d8a);
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.1s;
+            margin-top: 4px;
+            letter-spacing: 0.5px;
+        }
+        .product-detail-close-btn:active {
+            transform: scale(0.97);
+            opacity: 0.8;
+        }
+        
+        /* ============================================================ */
+        /* ===== STYLISH TPIN MODAL ===== */
+        /* ============================================================ */
+        .tpin-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            z-index: 600;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+        .tpin-modal-overlay.active {
+            display: flex;
+        }
+        .tpin-modal-card {
+            background: white;
+            border-radius: 32px;
+            max-width: 360px;
+            width: 100%;
+            padding: 32px 24px 28px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .tpin-modal-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #001959, #dfad47, #001959);
+        }
+        .tpin-modal-icon {
+            font-size: 56px;
+            margin-bottom: 8px;
+        }
+        .tpin-modal-title {
+            font-size: 22px;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 6px;
+        }
+        .tpin-modal-sub {
+            font-size: 14px;
+            color: #94a3b8;
+            margin-bottom: 20px;
+        }
+        .tpin-input-wrap {
+            position: relative;
+            margin: 12px 0 20px;
+        }
+        .tpin-input-wrap input {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e2e8f0;
+            border-radius: 60px;
+            font-size: 20px;
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: 12px;
+            font-family: monospace;
+            background: #f8fafc;
+            transition: 0.2s;
+            color: #0f172a;
+        }
+        .tpin-input-wrap input:focus {
+            border-color: #001959;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(0, 25, 89, 0.1);
+        }
+        .tpin-input-wrap input::placeholder {
+            letter-spacing: 2px;
+            font-weight: 400;
+            font-size: 14px;
+            color: #cbd5e1;
+        }
+        .tpin-modal-actions {
+            display: flex;
+            gap: 12px;
+        }
+        .tpin-modal-actions button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 40px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        .tpin-modal-actions button:active { transform: scale(0.97); }
+        .tpin-btn-ok {
+            background: linear-gradient(135deg, #001959, #002d8a);
+            color: white;
+        }
+        .tpin-btn-ok:hover { opacity: 0.9; }
+        .tpin-btn-cancel {
+            background: #f1f5f9;
+            color: #475569;
+        }
+        .tpin-btn-cancel:hover { background: #e2e8f0; }
+        .tpin-error {
+            color: #ef4444;
+            font-size: 13px;
+            margin-top: 10px;
+            min-height: 20px;
+        }
+        
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 400;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+        .modal-card {
+            background: white;
+            margin: 20px;
+            padding: 24px;
+            border-radius: 32px;
+            max-width: 340px;
+            width: 90%;
+            text-align: center;
+        }
+        .modal-card .modal-icon { font-size: 48px; margin-bottom: 10px; }
+        .modal-card .modal-title { font-size: 20px; font-weight: 700; color: #0f172a; }
+        .modal-card .modal-sub { font-size: 14px; color: #475569; margin: 8px 0 16px; }
+        .modal-input {
+            width: 100%;
+            padding: 14px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 30px;
+            margin: 10px 0;
+            font-size: 16px;
+            text-align: center;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #001959, #002d8a);
+            color: white;
+            padding: 12px;
+            border-radius: 40px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+        }
+        .btn-danger {
+            background: #dc2626;
+            color: white;
+            padding: 12px;
+            border-radius: 40px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+        }
+        .btn-cancel {
+            background: #f1f5f9;
+            color: #475569;
+            padding: 12px;
+            border-radius: 40px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            flex: 1;
+        }
+        .icon-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin: 16px 0; }
+        .icon-option { aspect-ratio: 1; background: #f8fafc; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 28px; cursor: pointer; border: 2px solid transparent; }
+        .icon-option.selected { border-color: #001959; background: #eef2ff; }
+        .image-upload-area { border: 2px dashed #cbd5e1; border-radius: 25px; padding: 12px; text-align: center; cursor: pointer; margin-top: 8px; }
+        .image-preview-sm { width: 80px; height: 80px; border-radius: 14px; object-fit: cover; margin: 8px auto; }
+        .toast-msg {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e293b;
+            color: white;
+            padding: 8px 18px;
+            border-radius: 35px;
+            font-size: 13px;
+            z-index: 200;
+            display: none;
+        }
+        .floating-add-btn {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            background: linear-gradient(135deg, #001959, #002d8a);
+            color: white;
+            width: 52px;
+            height: 52px;
+            border-radius: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            cursor: pointer;
+            z-index: 90;
+            font-size: 24px;
+        }
+        .empty-state { text-align: center; padding: 40px; color: #94a3b8; }
+        .back-btn { background: none; border: none; color: #001959; font-weight: 600; margin-bottom: 15px; display: flex; align-items: center; gap: 5px; cursor: pointer; }
+        .selected-badge { background: #eef2ff; padding: 8px 16px; border-radius: 40px; display: inline-block; margin-bottom: 16px; font-weight: 500; }
+        .category-list { display: flex; flex-direction: column; gap: 12px; margin: 20px 0; max-height: 400px; overflow-y: auto; }
+        .category-item { background: #f1f5f9; padding: 14px 18px; border-radius: 60px; display: flex; align-items: center; gap: 12px; font-weight: 600; cursor: pointer; }
+        
+        .unlock-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .unlock-card {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            border-radius: 56px;
+            padding: 32px 24px 40px;
+            width: 100%;
+            max-width: 360px;
+            text-align: center;
+            box-shadow: 0 30px 50px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(223, 173, 71, 0.2);
+            border: 1px solid rgba(223, 173, 71, 0.4);
+        }
+        .unlock-icon {
+            font-size: 64px;
+            background: linear-gradient(135deg, #001959, #dfad47);
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        .unlock-title {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #001959, #dfad47);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 8px;
+        }
+        .unlock-sub {
+            color: #475569;
+            font-size: 14px;
+            margin-bottom: 28px;
+        }
+        .unlock-input {
+            width: 100%;
+            text-align: center;
+            font-size: 32px;
+            letter-spacing: 12px;
+            padding: 14px 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 60px;
+            margin-bottom: 20px;
+            font-weight: 700;
+            font-family: monospace;
+            background: #f8fafc;
+            transition: all 0.2s;
+        }
+        .unlock-input:focus {
+            border-color: #dfad47;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(223, 173, 71, 0.2);
+        }
+        .unlock-btn {
+            background: linear-gradient(135deg, #001959, #002d8a);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 60px;
+            width: 100%;
+            font-weight: 700;
+            font-size: 18px;
+            cursor: pointer;
+            margin-bottom: 16px;
+            transition: transform 0.1s;
+        }
+        .unlock-btn:active { transform: scale(0.97); }
+        .fingerprint-btn {
+            background: #1e293b;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 60px;
+            width: 100%;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        .fingerprint-btn:active { transform: scale(0.97); }
+        .unlock-error {
+            color: #ef4444;
+            font-size: 13px;
+            margin-top: 12px;
+            background: rgba(239, 68, 68, 0.1);
+            padding: 6px;
+            border-radius: 40px;
+        }
+        h3 { font-size: 20px; font-weight: 700; color: #0f172a; margin-bottom: 10px; }
+    
+        .pwa-install-overlay{position:fixed;inset:0;z-index:99999;background:rgba(8,15,30,.62);display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(5px)}
+        .pwa-install-card{width:min(360px,100%);background:#fff;border-radius:22px;padding:24px 20px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3);font-family:system-ui,sans-serif}
+        .pwa-install-logo{width:82px;height:82px;object-fit:cover;border-radius:20px;margin:0 auto 12px;box-shadow:0 5px 18px #0002}
+        .pwa-install-card h2{font-size:22px;color:#111827;margin:0 0 8px}
+        .pwa-install-card p{font-size:14px;color:#4b5563;line-height:1.5;margin:0 0 18px}
+        .pwa-install-actions{display:flex;gap:10px;justify-content:center}
+        .pwa-install-actions button{border:0;border-radius:12px;padding:12px 16px;font-weight:800;font-size:14px;cursor:pointer}
+        #pwaInstallConfirm{background:#ffbf00;color:#111827;flex:1}
+        #pwaInstallLater{background:#f1f5f9;color:#374151}
+        @media (prefers-reduced-motion:no-preference){.pwa-install-card{animation:pwaPop .22s ease-out}@keyframes pwaPop{from{transform:translateY(10px) scale(.97);opacity:.5}to{transform:none;opacity:1}}}
+
+    </style>
+</head>
+<body>
+<div class="app-main">
+    <div class="premium-banner">
+        <h1 class="main-title">Noman Power Tools</h1>
+        <div class="gold-divider"></div>
+        <p class="tagline">
+            <span>Quality Products</span>
+            <span class="gold-dot">•</span>
+            <span>Best Prices</span>
+            <span class="gold-dot">•</span>
+            <span>Since 2024</span>
+        </p>
+
+
+        <div class="curve-wrapper">
+            <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+                <path d="M0,30 Q720,115 1440,30 L1440,120 L0,120 Z" class="curve-white-stroke"></path>
+                <path d="M0,34 Q720,119 1440,34 L1440,120 L0,120 Z" class="curve-gold-stroke"></path>
+                <path d="M0,38 Q720,123 1440,38 L1440,120 L0,120 Z" class="curve-fill"></path>
+            </svg>
+        </div>
+    </div>
+
+    <div id="homeScreen" class="screen">
+        <div class="search-bar"><span>🔍</span><input type="text" id="searchInput" placeholder="Search products..."></div>
+        <div class="category-chips" id="categoryChips"></div>
+        <div id="homeProductsGrid" class="products-grid"></div>
+    </div>
+
+    <div id="addProductScreen" class="screen">
+        <div id="addProductInitialView">
+            <div style="font-size:22px; font-weight:700;">📦 Add New Product</div>
+            <div style="color:#6b7280; margin:8px 0 24px;">First add a category, then add products</div>
+            <button class="btn-primary" id="openCategoryBtn" style="width:100%; margin-bottom:12px;">➕ Add New Category</button>
+            <button class="btn-primary" id="openProductBtn" style="background:#1e6b4c;">📝 Add Product</button>
+        </div>
+        <div id="addProductCategoryView" style="display:none;">
+            <button class="back-btn" id="backToInitialViewBtn"><span>←</span> Back</button>
+            <div style="font-size:18px; font-weight:600; margin:10px 0;">Select a category:</div>
+            <div id="categorySelectorList" class="category-list"></div>
+        </div>
+        <div id="addProductFormView" style="display:none;">
+            <button class="back-btn" id="backToCategoryListViewBtn"><span>←</span> Back</button>
+            <div class="selected-badge" id="selectedCategoryDisplay"></div>
+            <input type="text" id="prodName" class="modal-input" placeholder="Product Name">
+            <input type="number" id="prodPurchasePrice" class="modal-input" placeholder="Purchase Price (₹)">
+            <input type="number" id="prodSellingPrice" class="modal-input" placeholder="Selling Price (₹)">
+            <input type="number" id="prodMrp" class="modal-input" placeholder="MRP (₹)">
+            <div class="image-upload-area" onclick="document.getElementById('prodImageFile').click()">
+                📤 Upload Image <input type="file" id="prodImageFile" accept="image/*" style="display:none">
+                <div id="imgPreviewContainer"></div>
+            </div>
+            <div style="display:flex; gap:12px; margin-top:15px;">
+                <button class="btn-cancel" id="cancelProductBtn" style="flex:1;">Cancel</button>
+                <button class="btn-primary" id="saveProductBtn" style="flex:1;">Save Product</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="stockScreen" class="screen">
+        <h3>📦 Product Management</h3>
+        <div class="search-bar"><span>🔍</span><input type="text" id="stockSearchInput" placeholder="Search product..."></div>
+        <div id="stockListContainer" class="stock-list-container"></div>
+    </div>
+
+    <div id="profileScreen" class="screen">
+        <div class="profile-stats">
+            <div class="setting-row" id="setTpinBtn"><span>🔒 Set/Change TPIN</span><span>▼</span></div>
+            <div class="setting-row" id="enableFingerprintBtn"><span>🖐️ Enable Fingerprint Unlock</span><span>▼</span></div>
+            
+            <div class="mode-toggle">
+                <span id="calcModeLabel" class="active">🧮 Calculator</span>
+                <div class="toggle-switch active" id="modeToggle">
+                    <div class="toggle-knob"></div>
+                </div>
+                <span id="denomModeLabel">💰 Denomination</span>
+            </div>
+            
+            <!-- ===== CALCULATOR WITH PHOTO NAME ===== -->
+            <div class="simple-calc-section" id="calculatorSection">
+                <div class="calc-header">
+                    <h4>🧮 Calculator & Notes</h4>
+                </div>
+                <div class="calc-display" id="calcDisplay">
+                    <span class="expr" id="calcExpr"></span>
+                    <span class="result" id="calcResult">0</span>
+                </div>
+                <div class="calc-grid">
+                    <button class="calc-btn" data-value="7">7</button>
+                    <button class="calc-btn" data-value="8">8</button>
+                    <button class="calc-btn" data-value="9">9</button>
+                    <button class="calc-btn operator" data-value="+">+</button>
+                    
+                    <button class="calc-btn" data-value="4">4</button>
+                    <button class="calc-btn" data-value="5">5</button>
+                    <button class="calc-btn" data-value="6">6</button>
+                    <button class="calc-btn operator" data-value="-">−</button>
+                    
+                    <button class="calc-btn" data-value="1">1</button>
+                    <button class="calc-btn" data-value="2">2</button>
+                    <button class="calc-btn" data-value="3">3</button>
+                    <button class="calc-btn operator" data-value="*">×</button>
+                    
+                    <button class="calc-btn clear" data-value="C">C</button>
+                    <button class="calc-btn" data-value="0">0</button>
+                    <button class="calc-btn" data-value=".">.</button>
+                    <button class="calc-btn operator" data-value="/">÷</button>
+                    
+                    <button class="calc-btn" data-value="(">(</button>
+                    <button class="calc-btn" data-value=")">)</button>
+                    <button class="calc-btn equals" data-value="=">=</button>
+                    <button class="calc-btn del" data-value="DEL">⌫</button>
+                </div>
+                <div class="kb-hint">⌨️ Type directly from keyboard | ⌫ = Delete last character</div>
+                
+                <textarea id="noteText" class="note-textarea" placeholder="Write note here... (e.g., 10 × 140 = 1400)"></textarea>
+                
+                
+                <div class="note-actions">
+                    <button class="btn-save-note" id="saveNoteBtn">💾 Save Note</button>
+                    <button class="btn-clear-note" id="clearNoteBtn">🗑️ Clear</button>
+                </div>
+                <div id="savedNotesContainer" class="saved-notes"></div>
+            </div>
+            
+            <div class="denomination-section active" id="denominationSection">
+                <div class="denom-header">
+                    <h4>💰 Cash Denomination</h4>
+                    <span class="badge">⌨️ Keyboard</span>
+                </div>
+                <div class="kb-hint" style="margin-bottom:10px;">⌨️ Type numbers directly in the count fields | Tab to navigate</div>
+                <table class="denom-table">
+                    <thead>
+                        <tr>
+                            <th>Denomination</th>
+                            <th>Count</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody id="denomTableBody"></tbody>
+                </table>
+                <div class="denom-total-box">
+                    <div class="total-row">
+                        <span class="label">📊 GRAND TOTAL</span>
+                        <span class="grand-total" id="denomGrandTotal">₹0</span>
+                    </div>
+                    <div class="total-row">
+                        <span class="label" id="denomWords">Zero Rupees Only</span>
+                        <span class="value-small" id="denomStats">Notes: 0 | Coins: 0</span>
+                    </div>
+                </div>
+                <div class="denom-actions">
+                    <button class="btn-denom-reset" id="denomResetBtn">↺ Reset</button>
+                    <button class="btn-denom-share" id="denomShareBtn">📤 Share</button>
+                </div>
+            </div>
+            
+            <div class="stats-row" id="statsClickTarget">
+                <div class="stats-item"><div class="stats-number" id="profileTotalProducts">0</div><div>Total Products</div></div>
+                <div class="stats-item"><div class="stats-number" id="profileTotalCategories">0</div><div>Total Categories</div></div>
+            </div>
+            
+            <div class="recycle-section" id="recycleBinSection">
+                <div class="recycle-header">
+                    <span>🗑️ Recently Deleted</span>
+                    <button class="recycle-clear-all" id="clearRecycleBtn">Clear All</button>
+                </div>
+                <div id="recycleListContainer"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-nav" id="bottomNav">
+        <div class="nav-item" data-screen="home"><span>🏠</span><span>Home</span></div>
+        <div class="nav-item" data-screen="addProduct"><span>➕</span><span>Add</span></div>
+        <div class="nav-item" data-screen="stock"><span>📦</span><span>Products</span></div>
+        <div class="nav-item" data-screen="profile"><span>👤</span><span>Profile</span></div>
+    </div>
+    <div class="floating-add-btn" id="fabBtn"><span>+</span></div>
+    <div id="toastMsg" class="toast-msg"></div>
+
+    <!-- ===== STYLISH TPIN MODAL ===== -->
+    <div id="tpinModal" class="tpin-modal-overlay">
+        <div class="tpin-modal-card">
+            <div class="tpin-modal-icon">🔐</div>
+            <div class="tpin-modal-title">Set TPIN</div>
+            <div class="tpin-modal-sub">Enter 4-6 digit PIN or leave empty to disable</div>
+            <div class="tpin-input-wrap">
+                <input type="password" id="tpinInput" maxlength="6" placeholder="••••••" inputmode="numeric" pattern="[0-9]*">
+            </div>
+            <div class="tpin-error" id="tpinError"></div>
+            <div class="tpin-modal-actions">
+                <button class="tpin-btn-cancel" id="tpinCancelBtn">Cancel</button>
+                <button class="tpin-btn-ok" id="tpinOkBtn">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="categoryModal" class="modal-overlay"><div class="modal-card"><div class="modal-title">📁 New Category</div><input type="text" id="newCategoryName" class="modal-input" placeholder="Category name"><div class="icon-grid" id="iconGrid"></div><input type="text" id="customIconInput" class="modal-input" placeholder="Or enter your own emoji" maxlength="2"><div style="display:flex; gap:12px;"><button class="btn-cancel" onclick="closeCategoryModal()">Cancel</button><button class="btn-primary" id="saveCategoryBtn">Save</button></div></div></div>
+    <div id="deleteCategoryModal" class="modal-overlay"><div class="modal-card"><div class="modal-title">Delete Category?</div><div id="deleteCategoryName"></div><div style="display:flex; gap:12px;"><button class="btn-cancel" onclick="closeDeleteModal()">Cancel</button><button class="btn-primary" id="confirmDeleteCatBtn">Delete</button></div></div></div>
+    <div id="deleteProductModal" class="modal-overlay"><div class="modal-card"><div class="modal-title">Delete Product?</div><div id="deleteProductName"></div><div style="display:flex; gap:12px;"><button class="btn-cancel" onclick="closeDeleteProductModal()">Cancel</button><button class="btn-primary" id="confirmDeleteProdBtn">Delete</button></div></div></div>
+
+    <div id="productDetailModal" class="product-detail-modal">
+        <div class="product-detail-card">
+            <div class="product-detail-image" id="detailImageContainer">
+                <span class="no-img" id="detailNoImage">🖼️</span>
+                <img id="detailImage" style="display:none;" alt="Product">
+            </div>
+            <div class="product-detail-name" id="detailTitle">Product Name</div>
+            <div class="product-detail-sub" id="detailSub"></div>
+            <div class="product-detail-category" id="detailCategory">CATEGORY</div>
+            <hr class="product-detail-divider">
+            <div class="product-detail-prices">
+                <div class="product-detail-price-row">
+                    <span class="label"><span class="icon">🛒</span> PURCHASE PRICE</span>
+                    <span class="value purchase" id="detailPurchasePrice">₹0</span>
+                </div>
+                <div class="product-detail-price-row">
+                    <span class="label"><span class="icon">💰</span> SELLING PRICE</span>
+                    <span class="value selling" id="detailSellingPrice">₹0</span>
+                </div>
+                <div class="product-detail-price-row">
+                    <span class="label"><span class="icon">🏷️</span> MRP</span>
+                    <span class="value mrp" id="detailMrp">₹0</span>
+                </div>
+            </div>
+            <button class="product-detail-close-btn" onclick="closeProductDetail()">✕ CLOSE</button>
+        </div>
+    </div>
+
+    <div id="restoreConfirmModal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-icon">♻️</div>
+            <div class="modal-title">Restore Item?</div>
+            <div class="modal-sub">This will restore the deleted item back to your inventory.</div>
+            <div style="display:flex; gap:12px;">
+                <button class="btn-cancel" onclick="closeRestoreModal()">Cancel</button>
+                <button class="btn-primary" id="confirmRestoreBtn" style="background:#15803d;">Yes, Restore</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="unlockScreen" class="unlock-screen">
+        <div class="unlock-card">
+            <div class="unlock-icon">🔐</div>
+            <div class="unlock-title">Enter TPIN</div>
+            <div class="unlock-sub">खाता अनलॉक करें / Unlock your account</div>
+            <input type="password" id="unlockPinInput" class="unlock-input" maxlength="6" placeholder="••••••">
+            <button id="unlockSubmitBtn" class="unlock-btn">🔓 UNLOCK</button>
+            <div id="unlockError" class="unlock-error"></div>
+            <div id="fingerprintUnlockBtn" class="fingerprint-btn" style="display:none;">🖐️ Use Fingerprint / फ़िंगरप्रिंट</div>
+        </div>
+    </div>
+</div>
+
+
+<div class="pwa-install-overlay" id="pwaInstallOverlay" role="dialog" aria-modal="true" aria-labelledby="pwaInstallTitle">
+  <div class="pwa-install-card">
+    <img class="pwa-install-logo" src="./icon-192.png" alt="NOMAN APPS icon">
+    <h2 id="pwaInstallTitle">NOMAN APPS इंस्टॉल करें</h2>
+    <p>ऐप को मोबाइल की होम स्क्रीन पर जोड़ें और इसे ऐप की तरह खोलें। आपकी मौजूदा वेबसाइट और डेटा सेटिंग्स बरकरार रहेंगी।</p>
+    <div class="pwa-install-actions"><button type="button" id="pwaInstallLater">अभी नहीं</button><button type="button" id="pwaInstallConfirm">Install App</button></div>
+  </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
+    import { getFirestore, doc, setDoc, onSnapshot, enableIndexedDbPersistence } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyA-pL2c_krKunSMXfAx4pSy62yRW496daU",
+        authDomain: "csc-wabsite.firebaseapp.com",
+        databaseURL: "https://csc-wabsite-default-rtdb.firebaseio.com",
+        projectId: "csc-wabsite",
+        storageBucket: "csc-wabsite.firebasestorage.app",
+        messagingSenderId: "327142092603",
+        appId: "1:327142092603:web:a247e16eab423c1abbd11e"
+    };
+    const IMGBB_API_KEY = "1f42df4851adb618a955ae35bd93282a";
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    enableIndexedDbPersistence(db).catch(e => console.warn("Offline mode"));
+
+    async function compressAndUpload(file) {
+        const compress = (f) => new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(f);
+            reader.onload = (e) => {
+                const img = new Image();
+                img.src = e.target.result;
+                img.onload = () => {
+                    let w = img.width, h = img.height;
+                    const maxDim = 800;
+                    if (w > maxDim) { h = (h * maxDim) / w; w = maxDim; }
+                    const canvas = document.createElement('canvas');
+                    canvas.width = w; canvas.height = h;
+                    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                    canvas.toBlob(resolve, f.type, 0.7);
+                };
+            };
+        });
+        const blob = await compress(file);
+        const fd = new FormData();
+        fd.append("image", blob);
+        const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: "POST", body: fd });
+        const data = await res.json();
+        if (data.success) return data.data.url;
+        throw new Error(data.error?.message);
+    }
+
+    let products = [], categories = [], userTpin = localStorage.getItem("aamir_tpin") || null;
+    let currentFilter = "All", searchQuery = "", stockSearch = "";
+    let selectedCategoryId = null, editingProductId = null;
+    let pendingUnlockResolve = null;
+    let fingerprintCredentialId = localStorage.getItem("aamir_fingerprint_id");
+    let fingerprintEnabled = fingerprintCredentialId !== null;
+
+    // ===== RECYCLE BIN =====
+    let recycleBin = JSON.parse(localStorage.getItem("aamir_recycle_bin") || "[]");
+    let pendingRestoreItem = null;
+
+    function saveRecycleBin() {
+        localStorage.setItem("aamir_recycle_bin", JSON.stringify(recycleBin));
+        renderRecycleBin();
+    }
+
+    function addToRecycleBin(item, type) {
+        const recycleItem = {
+            id: item.id || Date.now() + Math.random().toString(36).substr(2, 5),
+            data: item,
+            type: type,
+            deletedAt: Date.now()
+        };
+        recycleBin.unshift(recycleItem);
+        if (recycleBin.length > 50) {
+            recycleBin = recycleBin.slice(0, 50);
+        }
+        saveRecycleBin();
+    }
+
+    function restoreFromRecycleBin(id) {
+        const index = recycleBin.findIndex(item => item.id === id);
+        if (index === -1) return false;
+        const recycleItem = recycleBin[index];
+        
+        if (recycleItem.type === 'product') {
+            products.unshift({ ...recycleItem.data, id: Date.now() + Math.random().toString(36).substr(2, 5) });
+            syncToFirestore();
+            renderAll();
+            showToast('✅ Product restored!');
+        } else if (recycleItem.type === 'category') {
+            const exists = categories.some(c => c.name === recycleItem.data.name);
+            if (!exists) {
+                categories.push({ ...recycleItem.data, id: Date.now() + Math.random().toString(36).substr(2, 5) });
+                syncToFirestore();
+                renderAll();
+                showToast('✅ Category restored!');
+            } else {
+                showToast('⚠️ Category already exists');
+                return false;
+            }
+        } else if (recycleItem.type === 'note') {
+            savedNotes.unshift({ ...recycleItem.data });
+            localStorage.setItem("aamir_notes", JSON.stringify(savedNotes));
+            renderSavedNotes();
+            showToast('✅ Note restored!');
+        }
+        
+        recycleBin.splice(index, 1);
+        saveRecycleBin();
+        return true;
+    }
+
+    function permanentDeleteFromRecycle(id) {
+        const index = recycleBin.findIndex(item => item.id === id);
+        if (index === -1) return;
+        recycleBin.splice(index, 1);
+        saveRecycleBin();
+        showToast('🗑️ Permanently deleted');
+    }
+
+    function clearRecycleBin() {
+        if (recycleBin.length === 0) return;
+        if (confirm('Delete all items permanently from recycle bin?')) {
+            recycleBin = [];
+            saveRecycleBin();
+            showToast('🗑️ Recycle bin cleared');
+        }
+    }
+
+    function renderRecycleBin() {
+        const container = document.getElementById('recycleListContainer');
+        if (recycleBin.length === 0) {
+            container.innerHTML = '<div class="recycle-empty">🗑️ No deleted items</div>';
+            return;
+        }
+        container.innerHTML = recycleBin.map(item => {
+            const time = new Date(item.deletedAt).toLocaleString('en-IN', { 
+                day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' 
+            });
+            const label = item.type === 'product' ? '📦' : item.type === 'category' ? '📁' : '📝';
+            const name = item.data.name || item.data.text || 'Unnamed';
+            return `
+                <div class="recycle-item">
+                    <div>
+                        <span class="recycle-name">${label} ${escapeHtml(name)}</span>
+                        <div class="recycle-time">${time}</div>
+                    </div>
+                    <div class="recycle-actions">
+                        <button class="btn-restore-item" onclick="window.restoreItem('${item.id}')" title="Restore">♻️</button>
+                        <button class="btn-permanent-delete" onclick="window.permanentDeleteItem('${item.id}')" title="Permanently Delete">🗑️</button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    window.restoreItem = function(id) {
+        pendingRestoreItem = id;
+        document.getElementById('restoreConfirmModal').style.display = 'flex';
+    };
+
+    window.permanentDeleteItem = function(id) {
+        if (confirm('Permanently delete this item? This cannot be undone.')) {
+            permanentDeleteFromRecycle(id);
+        }
+    };
+
+    window.closeRestoreModal = function() {
+        document.getElementById('restoreConfirmModal').style.display = 'none';
+        pendingRestoreItem = null;
+    };
+
+    document.getElementById('confirmRestoreBtn').addEventListener('click', () => {
+        if (pendingRestoreItem) {
+            restoreFromRecycleBin(pendingRestoreItem);
+            pendingRestoreItem = null;
+        }
+        closeRestoreModal();
+    });
+
+    document.getElementById('clearRecycleBtn').addEventListener('click', clearRecycleBin);
+
+    // ===== TOGGLE =====
+    let currentMode = 'calculator';
+    const toggleSwitch = document.getElementById('modeToggle');
+    const calcSection = document.getElementById('calculatorSection');
+    const denomSection = document.getElementById('denominationSection');
+    const calcLabel = document.getElementById('calcModeLabel');
+    const denomLabel = document.getElementById('denomModeLabel');
+
+    function setMode(mode) {
+        currentMode = mode;
+        if (mode === 'calculator') {
+            calcSection.style.display = 'block';
+            denomSection.classList.remove('active');
+            denomSection.style.display = 'none';
+            toggleSwitch.classList.add('active');
+            calcLabel.classList.add('active');
+            denomLabel.classList.remove('active');
+            document.removeEventListener('keydown', handleDenomKeydown);
+        } else {
+            calcSection.style.display = 'none';
+            denomSection.classList.add('active');
+            denomSection.style.display = 'block';
+            toggleSwitch.classList.remove('active');
+            calcLabel.classList.remove('active');
+            denomLabel.classList.add('active');
+            document.addEventListener('keydown', handleDenomKeydown);
+            setTimeout(() => {
+                const firstInput = document.querySelector('#denomTableBody input[type="text"]');
+                if (firstInput) firstInput.focus();
+            }, 150);
+        }
+    }
+
+    toggleSwitch.addEventListener('click', () => {
+        if (currentMode === 'calculator') {
+            setMode('denomination');
+            showToast('💰 Denomination mode');
+        } else {
+            setMode('calculator');
+            showToast('🧮 Calculator mode');
+        }
+    });
+
+    // ===== CALCULATOR =====
+    const calcExprEl = document.getElementById("calcExpr");
+    const calcResultEl = document.getElementById("calcResult");
+    const noteText = document.getElementById("noteText");
+    let calcExpression = "";
+    let calcResult = "0";
+    let justEvaluated = false;
+    let lastFullExpression = "";
+    
+    function updateCalcDisplay(expr, result) {
+        calcExprEl.textContent = expr || "";
+        calcResultEl.textContent = result || "0";
+    }
+    
+    function evaluateCalc(expr) {
+        try {
+            let sanitized = expr.replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-');
+            if (!/^[\d+\-*/%(). ]+$/.test(sanitized)) {
+                const clean = sanitized.replace(/[^0-9+\-*/%().]/g, '');
+                if (!clean) return null;
+                sanitized = clean;
+            }
+            const result = new Function(`return (${sanitized})`)();
+            if (typeof result === 'number' && !isNaN(result) && isFinite(result)) {
+                return parseFloat(result.toFixed(10));
+            }
+            return null;
+        } catch(e) {
+            return null;
+        }
+    }
+    
+    function handleCalcInput(char) {
+        if (char === 'DEL' || char === 'del' || char === '⌫' || char === 'Backspace') {
+            if (calcExpression.length > 0) {
+                calcExpression = calcExpression.slice(0, -1);
+                if (!calcExpression) {
+                    calcResult = "0";
+                    updateCalcDisplay("", "0");
+                } else {
+                    const preview = evaluateCalc(calcExpression);
+                    if (preview !== null) {
+                        calcResult = String(preview);
+                        updateCalcDisplay(calcExpression, preview);
+                    } else {
+                        updateCalcDisplay(calcExpression, calcResult || "0");
+                    }
+                }
+            }
+            return;
+        }
+        if (char === 'C' || char === 'c') {
+            calcExpression = "";
+            calcResult = "0";
+            updateCalcDisplay("", "0");
+            return;
+        }
+        if (char === '=' || char === 'Enter') {
+            if (!calcExpression.trim()) return;
+            const result = evaluateCalc(calcExpression);
+            if (result !== null) {
+                const fullExpr = calcExpression + " = " + result;
+                lastFullExpression = fullExpr;
+                calcResult = String(result);
+                updateCalcDisplay(calcExpression + " =", result);
+                noteText.value += (noteText.value ? '\n' : '') + fullExpr;
+                calcExpression = "";
+                justEvaluated = true;
+            } else {
+                calcResult = "Error";
+                updateCalcDisplay(calcExpression, "❌ Error");
+                calcExpression = "";
+            }
+            return;
+        }
+        const allowed = /^[\d+\-*/%().]$/;
+        if (allowed.test(char)) {
+            if (justEvaluated) {
+                calcExpression = "";
+                justEvaluated = false;
+            }
+            calcExpression += char;
+            const preview = evaluateCalc(calcExpression);
+            if (preview !== null) {
+                calcResult = String(preview);
+                updateCalcDisplay(calcExpression, preview);
+            } else {
+                updateCalcDisplay(calcExpression, calcResult || "0");
+            }
+        }
+    }
+    
+    document.querySelectorAll('.calc-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const val = btn.dataset.value;
+            if (val === 'DEL') {
+                handleCalcInput('DEL');
+            } else if (val === 'C') {
+                handleCalcInput('C');
+            } else if (val === '=') {
+                handleCalcInput('=');
+            } else {
+                handleCalcInput(val);
+            }
+        });
+    });
+    
+    document.addEventListener('keydown', (e) => {
+        const profileScreen = document.getElementById('profileScreen');
+        if (!profileScreen.classList.contains('active-screen')) return;
+        if (currentMode !== 'calculator') return;
+        const key = e.key;
+        if (key === 'Enter') { e.preventDefault(); handleCalcInput('='); return; }
+        if (key === 'Backspace') {
+            e.preventDefault();
+            handleCalcInput('DEL');
+            return;
+        }
+        if (key === 'Escape') { e.preventDefault(); handleCalcInput('C'); return; }
+        if (/^[0-9+\-*/%().]$/.test(key)) { e.preventDefault(); handleCalcInput(key); }
+    });
+    
+    // ===== NOTES WITH PHOTO NAME =====
+    let savedNotes = JSON.parse(localStorage.getItem("aamir_notes") || "[]");
+    
+    function renderSavedNotes() {
+        const container = document.getElementById("savedNotesContainer");
+        if (savedNotes.length === 0) {
+            container.innerHTML = '';
+            return;
+        }
+        container.innerHTML = savedNotes.map((note, index) => {
+            const hasImage = note.image && note.image.startsWith('data:image');
+            let amount = 0;
+            const match = note.text.match(/=\s*([\d,]+(?:\.\d{1,2})?)/);
+            if (match) amount = parseFloat(match[1].replace(/,/g, ''));
+            else {
+                const numMatch = note.text.match(/₹?\s*([\d,]+)$/);
+                if (numMatch) amount = parseFloat(numMatch[1].replace(/,/g, ''));
+            }
+            const amountBadge = amount > 0 ? `<span class="note-amount-badge">₹${amount}</span>` : '';
+            const photoNameDisplay = note.photoName ? `<div class="note-photo-name">📷 ${escapeHtml(note.photoName)}</div>` : '';
+            
+            return `
+                <div class="saved-note-item">
+                    ${hasImage ? `<img src="${note.image}" class="note-thumb">` : `<div class="note-thumb-placeholder">📄</div>`}
+                    <div class="note-content">
+                        <div class="note-text-display">${escapeHtml(note.text)} ${amountBadge}</div>
+                        ${photoNameDisplay}
+                        <div class="note-meta">
+                            <span class="note-time">${note.time}</span>
+                            <button class="delete-note-btn" data-index="${index}">✕</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+        container.querySelectorAll('.delete-note-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const idx = parseInt(btn.dataset.index);
+                const note = savedNotes[idx];
+                if (note) addToRecycleBin(note, 'note');
+                savedNotes.splice(idx, 1);
+                localStorage.setItem("aamir_notes", JSON.stringify(savedNotes));
+                renderSavedNotes();
+                showToast("Note deleted / नोट हटा दिया (moved to recycle bin)");
+            });
+        });
+    }
+    
+    document.getElementById("saveNoteBtn").addEventListener('click', () => {
+        const text = noteText.value.trim();
+        if (!text) { showToast("Write something first! / कुछ लिखें!"); return; }
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+        const noteObj = {
+            text: text,
+            time: timeStr,
+            image: null,
+            photoName: null
+        };
+        savedNotes.unshift(noteObj);
+        localStorage.setItem("aamir_notes", JSON.stringify(savedNotes));
+        renderSavedNotes();
+        showToast("✅ Note saved! / नोट सहेजा गया!");
+        noteText.value = '';
+        calcExpression = '';
+        calcResult = "0";
+        updateCalcDisplay("", "0");
+    });
+
+    document.getElementById("clearNoteBtn").addEventListener('click', () => {
+        noteText.value = '';
+        calcExpression = '';
+        calcResult = "0";
+        updateCalcDisplay("", "0");
+        showToast("Cleared / साफ कर दिया");
+    });
+    
+    renderSavedNotes();
+
+    // ============================================================
+    // ===== CASH DENOMINATION =====
+    // ============================================================
+    
+    // ===== DENOMINATION PICTURES =====
+    const noteImages = {
+        2000: 'https://cdn.phototourl.com/free/2026-07-16-f46ca8b3-e694-48e1-8375-b2377a30bfc8.jpg',
+        500: 'https://iili.io/CjHzkSj.jpg',
+        200: 'https://cdn.phototourl.com/free/2026-07-16-701ae87b-0016-477c-860b-129e59a7afd0.jpg',
+        100: 'https://cdn.phototourl.com/free/2026-07-16-6eb640f6-6e21-4768-97c3-91df5d8076b8.jpg',
+        50: 'https://cdn.phototourl.com/free/2026-07-16-8e2928a4-5ee1-423c-8b95-4fee9d0c6272.jpg',
+        20: 'https://iili.io/CjHIgdG.jpg',
+        10: 'https://iili.io/Ch5hq3x.jpg',
+        5: 'https://cdn.phototourl.com/free/2026-07-16-d428bdf6-06fa-4995-99b5-6159edde0aea.jpg',
+        2: 'https://cdn.phototourl.com/free/2026-07-16-88d524a8-2cef-40dc-bab6-4156eadcbb94.jpg',
+        1: 'https://cdn.phototourl.com/free/2026-07-16-28e6f9e1-52f6-4822-8d02-ac6f9177de66.jpg'
+    };
+
+    const denominations = [
+        { value: 2000, label: '₹2000 Note', icon: noteImages[2000] },
+        { value: 500, label: '₹500 Note', icon: noteImages[500] },
+        { value: 200, label: '₹200 Note', icon: noteImages[200] },
+        { value: 100, label: '₹100 Note', icon: noteImages[100] },
+        { value: 50, label: '₹50 Note', icon: noteImages[50] },
+        { value: 20, label: '₹20 Note', icon: noteImages[20] },
+        { value: 10, label: '₹10 Coin', icon: noteImages[10] },
+        { value: 5, label: '₹5 Coin', icon: noteImages[5] },
+        { value: 2, label: '₹2 Coin', icon: noteImages[2] },
+        { value: 1, label: '₹1 Coin', icon: noteImages[1] }
+    ];
+
+    let denomCounts = {};
+    let denomInputs = {};
+
+    function initDenomCounts() {
+        const saved = localStorage.getItem("aamir_denom_counts");
+        if (saved) {
+            denomCounts = JSON.parse(saved);
+        } else {
+            denominations.forEach(d => { denomCounts[d.value] = 0; });
+        }
+    }
+    initDenomCounts();
+
+    function renderDenominationTable() {
+        const tbody = document.getElementById('denomTableBody');
+        tbody.innerHTML = '';
+        denominations.forEach(d => {
+            const tr = document.createElement('tr');
+            const isUrl = d.icon && d.icon.startsWith('http');
+            const iconHtml = isUrl 
+                ? `<img src="${d.icon}" class="denom-icon" alt="${d.label}" loading="lazy" onerror="this.style.display='none';this.parentElement.insertAdjacentHTML('afterbegin','<span class="denom-emoji">💰</span>')">`
+                : `<span class="denom-emoji">${d.icon || '💰'}</span>`;
+            tr.innerHTML = `
+                <td class="denom-label">${iconHtml} ${d.label}</td>
+                <td><input type="text" id="denom_input_${d.value}" value="${denomCounts[d.value] || ''}" inputmode="numeric" pattern="[0-9]*"></td>
+                <td class="denom-subtotal" id="denom_subtotal_${d.value}">₹${(denomCounts[d.value] || 0) * d.value}</td>
+            `;
+            tbody.appendChild(tr);
+            
+            const input = tr.querySelector('input');
+            
+            input.addEventListener('keydown', function(e) {
+                const allowedKeys = ['0','1','2','3','4','5','6','7','8','9','Backspace','Delete','Tab','ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Enter','Home','End'];
+                if (!allowedKeys.includes(e.key) && !e.key.startsWith('Arrow')) {
+                    e.preventDefault();
+                }
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const inputs = document.querySelectorAll('#denomTableBody input[type="text"]');
+                    const idx = Array.from(inputs).indexOf(this);
+                    if (idx < inputs.length - 1) {
+                        inputs[idx + 1].focus();
+                    }
+                }
+            });
+            
+            input.addEventListener('input', function() {
+                this.value = this.value.replace(/[^0-9]/g, '');
+                const val = parseInt(this.value) || 0;
+                denomCounts[d.value] = val;
+                updateDenomTotals();
+                localStorage.setItem("aamir_denom_counts", JSON.stringify(denomCounts));
+            });
+            
+            input.addEventListener('blur', function() {
+                if (this.value === '') {
+                    this.value = '';
+                    denomCounts[d.value] = 0;
+                    updateDenomTotals();
+                    localStorage.setItem("aamir_denom_counts", JSON.stringify(denomCounts));
+                }
+            });
+            denomInputs[d.value] = input;
+        });
+        updateDenomTotals();
+    }
+
+    function handleDenomKeydown(e) {
+        if (currentMode !== 'denomination') return;
+        const profileScreen = document.getElementById('profileScreen');
+        if (!profileScreen.classList.contains('active-screen')) return;
+        
+        if (e.target.tagName === 'INPUT' && e.target.type === 'text') {
+            const allowed = ['0','1','2','3','4','5','6','7','8','9','Backspace','Delete','Tab','ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Enter','Home','End'];
+            if (allowed.includes(e.key) || e.key.startsWith('Arrow')) {
+                return;
+            }
+            e.preventDefault();
+            return;
+        }
+        
+        if (/^[0-9]$/.test(e.key)) {
+            const firstInput = document.querySelector('#denomTableBody input[type="text"]');
+            if (firstInput) {
+                e.preventDefault();
+                firstInput.focus();
+                firstInput.value = e.key;
+                const event = new Event('input', { bubbles: true });
+                firstInput.dispatchEvent(event);
+            }
+        }
+    }
+
+    function updateDenomTotals() {
+        let grandTotal = 0;
+        let totalNotes = 0;
+        let totalCoins = 0;
+        const coinValues = [10, 5, 2, 1];
+        
+        denominations.forEach(d => {
+            const count = denomCounts[d.value] || 0;
+            const subtotal = count * d.value;
+            grandTotal += subtotal;
+            const subtotalEl = document.getElementById(`denom_subtotal_${d.value}`);
+            if (subtotalEl) subtotalEl.textContent = `₹${subtotal.toLocaleString()}`;
+            
+            if (coinValues.includes(d.value)) {
+                totalCoins += count;
+            } else {
+                totalNotes += count;
+            }
+        });
+        
+        document.getElementById('denomGrandTotal').textContent = `₹${grandTotal.toLocaleString()}`;
+        document.getElementById('denomStats').textContent = `Notes: ${totalNotes} | Coins: ${totalCoins}`;
+        document.getElementById('denomWords').textContent = numberToWords(grandTotal) + ' Rupees Only';
+    }
+
+    function numberToWords(num) {
+        if (num === 0) return 'Zero';
+        const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+        const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+        
+        function convert(n) {
+            if (n < 20) return ones[n];
+            if (n < 100) return tens[Math.floor(n/10)] + (n%10 ? ' ' + ones[n%10] : '');
+            if (n < 1000) return ones[Math.floor(n/100)] + ' Hundred' + (n%100 ? ' ' + convert(n%100) : '');
+            if (n < 100000) return convert(Math.floor(n/1000)) + ' Thousand' + (n%1000 ? ' ' + convert(n%1000) : '');
+            if (n < 10000000) return convert(Math.floor(n/100000)) + ' Lakh' + (n%100000 ? ' ' + convert(n%100000) : '');
+            return convert(Math.floor(n/10000000)) + ' Crore' + (n%10000000 ? ' ' + convert(n%10000000) : '');
+        }
+        return convert(num);
+    }
+
+    document.getElementById('denomResetBtn').addEventListener('click', () => {
+        denominations.forEach(d => { denomCounts[d.value] = 0; });
+        Object.values(denomInputs).forEach(inp => { inp.value = ''; });
+        localStorage.setItem("aamir_denom_counts", JSON.stringify(denomCounts));
+        updateDenomTotals();
+        showToast('↺ Reset to zero');
+    });
+
+    document.getElementById('denomShareBtn').addEventListener('click', () => {
+        let grandTotal = 0;
+        let lines = [];
+        denominations.forEach(d => {
+            const count = denomCounts[d.value] || 0;
+            if (count > 0) {
+                const subtotal = count * d.value;
+                grandTotal += subtotal;
+                lines.push(`${d.label}: ${count} × ₹${d.value} = ₹${subtotal}`);
+            }
+        });
+        
+        if (lines.length === 0) {
+            showToast('No counts to share!');
+            return;
+        }
+        
+        const shareText = `💰 Cash Denomination Report\n${'─'.repeat(30)}\n${lines.join('\n')}\n${'─'.repeat(30)}\n📊 GRAND TOTAL: ₹${grandTotal.toLocaleString()}\n${document.getElementById('denomWords').textContent}`;
+        
+        if (navigator.share) {
+            navigator.share({
+                title: 'Cash Denomination',
+                text: shareText
+            }).catch(() => {});
+        } else {
+            navigator.clipboard.writeText(shareText).then(() => {
+                showToast('📋 Copied to clipboard!');
+            }).catch(() => {
+                prompt('Copy this:', shareText);
+            });
+        }
+    });
+
+    renderDenominationTable();
+    setMode('calculator');
+
+    // Override delete functions
+    async function deleteProductWithRecycle(id) {
+        const product = products.find(p => p.id === id);
+        if (product) {
+            addToRecycleBin(product, 'product');
+        }
+        products = products.filter(p => p.id !== id);
+        await syncToFirestore();
+        renderAll();
+        showToast('🗑️ Product moved to recycle bin');
+    }
+
+    async function deleteCategoryWithRecycle(id) {
+        const category = categories.find(c => c.id === id);
+        if (category) {
+            addToRecycleBin(category, 'category');
+        }
+        products = products.map(p => p.category === id ? {...p, category: null} : p);
+        categories = categories.filter(c => c.id !== id);
+        if (currentFilter === id) currentFilter = "All";
+        await syncToFirestore();
+        renderAll();
+        showToast('🗑️ Category moved to recycle bin');
+    }
+
+    window.deleteProduct = deleteProductWithRecycle;
+    window.deleteCategory = deleteCategoryWithRecycle;
+
+    window.showDeleteProductModal = (id) => {
+        window.pendingProductDeleteId = id;
+        document.getElementById('deleteProductModal').style.display = 'flex';
+    };
+
+    window.closeDeleteProductModal = () => {
+        document.getElementById('deleteProductModal').style.display = 'none';
+    };
+
+    window.showDeleteModal = (catId) => {
+        window.pendingDeleteId = catId;
+        document.getElementById('deleteCategoryModal').style.display = 'flex';
+    };
+
+    window.closeDeleteModal = () => {
+        document.getElementById('deleteCategoryModal').style.display = 'none';
+    };
+
+    document.getElementById('confirmDeleteProdBtn').onclick = async () => {
+        if (window.pendingProductDeleteId) {
+            await deleteProductWithRecycle(window.pendingProductDeleteId);
+        }
+        closeDeleteProductModal();
+    };
+
+    document.getElementById('confirmDeleteCatBtn').onclick = async () => {
+        if (window.pendingDeleteId) {
+            await deleteCategoryWithRecycle(window.pendingDeleteId);
+        }
+        closeDeleteModal();
+    };
+
+    // ===== PRODUCT DETAIL =====
+    window.showProductDetail = function(id) {
+        const p = products.find(p => p.id === id);
+        if (!p) return;
+        
+        const modal = document.getElementById('productDetailModal');
+        const img = document.getElementById('detailImage');
+        const noImg = document.getElementById('detailNoImage');
+        const title = document.getElementById('detailTitle');
+        const sub = document.getElementById('detailSub');
+        const category = document.getElementById('detailCategory');
+        const purchase = document.getElementById('detailPurchasePrice');
+        const selling = document.getElementById('detailSellingPrice');
+        const mrp = document.getElementById('detailMrp');
+        
+        title.textContent = p.name || 'Product';
+        sub.textContent = p.sub || '';
+        const cat = categories.find(c => c.id === p.category);
+        category.textContent = cat ? cat.name.toUpperCase() : 'UNCATEGORIZED';
+        purchase.textContent = `₹${p.purchasePrice || 0}`;
+        selling.textContent = `₹${p.sellingPrice || 0}`;
+        mrp.textContent = `₹${p.mrp || 0}`;
+        
+        if (p.imageUrl) {
+            img.src = p.imageUrl;
+            img.style.display = 'block';
+            noImg.style.display = 'none';
+        } else {
+            img.style.display = 'none';
+            noImg.style.display = 'block';
+        }
+        
+        modal.classList.add('active');
+    };
+
+    window.closeProductDetail = function() {
+        document.getElementById('productDetailModal').classList.remove('active');
+    };
+
+    document.getElementById('productDetailModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeProductDetail();
+        }
+    });
+
+    function showToast(msg) { const t = document.getElementById("toastMsg"); t.innerText = msg; t.style.display = "block"; setTimeout(() => t.style.display = "none", 2000); }
+    async function syncToFirestore() { await setDoc(doc(db, "inventory", "master"), { categories, products, updatedAt: new Date() }); localStorage.setItem("aamir_products_backup", JSON.stringify(products)); localStorage.setItem("aamir_categories_backup", JSON.stringify(categories)); }
+    function startFirestoreListener() {
+        onSnapshot(doc(db, "inventory", "master"), (snap) => {
+            if (snap.exists()) { const d = snap.data(); categories = d.categories || []; products = d.products || []; renderAll(); showToast("☁️ Synced"); }
+            else { const p = localStorage.getItem("aamir_products_backup"), c = localStorage.getItem("aamir_categories_backup"); if (p) products = JSON.parse(p); if (c) categories = JSON.parse(c); if (categories.length || products.length) syncToFirestore(); else setDoc(doc(db, "inventory", "master"), { categories: [], products: [] }); renderAll(); }
+        });
+    }
+    async function addCategory(n, i) { const id = Date.now()+Math.random().toString(36).substr(2,5); categories.push({ id, name:n, icon:i }); await syncToFirestore(); renderAll(); showToast(`✅ Category "${n}" added`); }
+    async function addProduct(pd, imgUrl) { const id = Date.now()+Math.random().toString(36).substr(2,5); products.unshift({ ...pd, id, stock:100, imageUrl: imgUrl || null }); await syncToFirestore(); renderAll(); showToast("✅ Product saved!"); }
+    async function updateProduct(id, up, imgUrl) { const idx = products.findIndex(p => p.id === id); if (idx !== -1) { products[idx] = { ...products[idx], ...up }; if (imgUrl !== undefined) products[idx].imageUrl = imgUrl; await syncToFirestore(); renderAll(); showToast("✅ Updated"); } }
+    function updateProfileStats() {
+        document.getElementById("profileTotalProducts").innerText = products.length;
+        document.getElementById("profileTotalCategories").innerText = categories.length;
+    }
+    function renderCategoryChips() {
+        let html = `<div class="chip ${currentFilter==='All'?'active':''}" data-cat="All">All</div><div class="chip ${currentFilter==='null'?'active':''}" data-cat="null">📂 Uncategorized</div>`;
+        html += categories.map(c => `<div class="chip ${currentFilter===c.id?'active':''}" data-cat="${c.id}">${c.icon||'📦'} ${c.name}<button class="delete-chip" onclick="event.stopPropagation(); window.showDeleteModal('${c.id}')">🗑️</button></div>`).join('');
+        document.getElementById("categoryChips").innerHTML = html;
+        document.querySelectorAll(".chip").forEach(ch => ch.addEventListener("click", (e) => { if(e.target.closest('.delete-chip')) return; currentFilter = ch.getAttribute("data-cat"); renderHomeProducts(); }));
+    }
+    
+    function formatBilingual(purchase, selling, mrp) {
+        return `
+            <div class="price-row"><span>🟢 Purchase / खरीद: ₹${purchase}</span></div>
+            <div class="sell-price-large">₹${selling} <span style="font-size:12px;">(Selling / बिक्री)</span></div>
+            <div class="price-row"><span>🔴 MRP / अधिकतम मूल्य: ₹${mrp}</span></div>
+        `;
+    }
+    function formatStockBilingual(purchase, selling, mrp) {
+        return `
+            <div class="stock-price-detail"><strong>🟢 Purchase / खरीद मूल्य:</strong> ₹${purchase}  (हमने मिला)</div>
+            <div class="stock-price-detail"><strong>🟡 Selling / विक्रय मूल्य:</strong> ₹${selling}  (सेल प्राइस)</div>
+            <div class="stock-price-detail"><strong>🔴 MRP / अधिकतम मूल्य:</strong> ₹${mrp}  (दुकानदार को देना है)</div>
+        `;
+    }
+    
+    function renderHomeProducts() {
+        let filtered = products.filter(p => (currentFilter==="All" || (currentFilter==="null" && !p.category) || p.category===currentFilter) && (p.name||"").toLowerCase().includes(searchQuery.toLowerCase()));
+        const cont = document.getElementById("homeProductsGrid");
+        if(!filtered.length) { cont.innerHTML = '<div class="empty-state">No products found</div>'; return; }
+        cont.innerHTML = filtered.map(p => `
+            <div class="product-card" onclick='window.showProductDetail("${p.id}")'>
+                <div class="product-image-container">${p.imageUrl ? `<img class="product-image" src="${p.imageUrl}">` : '<span class="no-image-icon">🖼️</span>'}</div>
+                <div class="product-info">
+                    <div class="product-name">${escapeHtml(p.name)}</div>
+                    ${formatBilingual(p.purchasePrice, p.sellingPrice, p.mrp)}
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    function renderStockList() {
+        let filtered = products.filter(p => (p.name||"").toLowerCase().includes(stockSearch.toLowerCase()));
+        const cont = document.getElementById("stockListContainer");
+        if(!filtered.length) { cont.innerHTML = '<div class="empty-state">✨ No products yet. Add some!</div>'; return; }
+        cont.innerHTML = filtered.map(p => `
+            <div class="stock-item">
+                <div class="stock-image-thumb">${p.imageUrl ? `<img src="${p.imageUrl}">` : '<span>📦</span>'}</div>
+                <div class="stock-info-block">
+                    <div class="stock-name">${escapeHtml(p.name)}</div>
+                    ${formatStockBilingual(p.purchasePrice, p.sellingPrice, p.mrp)}
+                    <div class="action-buttons">
+                        <button class="btn-edit-action" onclick="window.editProduct('${p.id}')">✏️ Edit / संपादन</button>
+                        <button class="btn-delete-action" onclick="window.showDeleteProductModal('${p.id}')">🗑️ Delete / हटाएँ</button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    window.editProduct = (id) => { 
+        let p = products.find(p=>p.id===id); 
+        if(p){ 
+            selectedCategoryId = p.category; 
+            editingProductId = id; 
+            document.getElementById("prodName").value = p.name; 
+            document.getElementById("prodPurchasePrice").value = p.purchasePrice; 
+            document.getElementById("prodSellingPrice").value = p.sellingPrice; 
+            document.getElementById("prodMrp").value = p.mrp; 
+            document.getElementById("imgPreviewContainer").innerHTML = ""; 
+            let catName = categories.find(c=>c.id===p.category)?.name || "Uncategorized";
+            document.getElementById("selectedCategoryDisplay").innerHTML = `📁 Category: ${catName}`; 
+            document.getElementById("addProductFormView").style.display = "block"; 
+            document.getElementById("addProductCategoryView").style.display = "none"; 
+            document.getElementById("addProductInitialView").style.display = "none"; 
+            switchScreen('addProduct'); 
+        } 
+    };
+    
+    function renderAll() { renderCategoryChips(); renderHomeProducts(); renderStockList(); updateProfileStats(); renderRecycleBin(); }
+    function switchScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
+        document.getElementById(id + "Screen").classList.add('active-screen');
+        document.querySelectorAll('.nav-item').forEach(nav => { if(nav.getAttribute('data-screen') === id) nav.classList.add('active'); else nav.classList.remove('active'); });
+        if(id === 'home') renderHomeProducts();
+        if(id === 'stock') renderStockList();
+        if(id === 'profile') { updateProfileStats(); renderRecycleBin(); renderSavedNotes(); }
+    }
+    
+    document.getElementById("openProductBtn").onclick = () => { if(categories.length===0){ showToast("Please add a category first"); return; } document.getElementById("addProductInitialView").style.display="none"; document.getElementById("addProductCategoryView").style.display="block"; document.getElementById("categorySelectorList").innerHTML = categories.map(c => `<div class="category-item" data-cat-id="${c.id}">${c.icon||'📦'} ${c.name}</div>`).join(''); document.querySelectorAll(".category-item").forEach(item => item.addEventListener("click", ()=>{ selectedCategoryId = item.getAttribute("data-cat-id"); editingProductId=null; const catName = categories.find(c=>c.id===selectedCategoryId).name; document.getElementById("selectedCategoryDisplay").innerHTML = `📁 Selected: ${catName}`; document.getElementById("addProductCategoryView").style.display="none"; document.getElementById("addProductFormView").style.display="block"; document.getElementById("prodName").value=""; document.getElementById("prodPurchasePrice").value=""; document.getElementById("prodSellingPrice").value=""; document.getElementById("prodMrp").value=""; document.getElementById("imgPreviewContainer").innerHTML=""; document.getElementById("prodImageFile").value=""; })); };
+    document.getElementById("backToInitialViewBtn").onclick = () => { document.getElementById("addProductInitialView").style.display="block"; document.getElementById("addProductCategoryView").style.display="none"; };
+    document.getElementById("backToCategoryListViewBtn").onclick = () => { document.getElementById("addProductFormView").style.display="none"; document.getElementById("addProductCategoryView").style.display="block"; };
+    document.getElementById("cancelProductBtn").onclick = () => { document.getElementById("addProductFormView").style.display="none"; document.getElementById("addProductCategoryView").style.display="block"; };
+    document.getElementById("saveProductBtn").onclick = async () => {
+        let name = document.getElementById("prodName").value.trim();
+        if(!selectedCategoryId && !editingProductId) { showToast("Select category"); return; }
+        if(!name) { showToast("Product name required"); return; }
+        let purchase = parseFloat(document.getElementById("prodPurchasePrice").value);
+        let selling = parseFloat(document.getElementById("prodSellingPrice").value);
+        let mrp = parseFloat(document.getElementById("prodMrp").value);
+        if(isNaN(purchase) || isNaN(selling) || isNaN(mrp)) { showToast("Enter valid prices"); return; }
+        let file = document.getElementById("prodImageFile").files[0];
+        let imageUrl = null;
+        if(file) { try { showToast("Uploading..."); imageUrl = await compressAndUpload(file); showToast("Image uploaded"); } catch(e) { showToast("Upload failed: " + e.message); return; } }
+        if(editingProductId) { let oldStock = products.find(p=>p.id===editingProductId)?.stock||100; await updateProduct(editingProductId, { name, category:selectedCategoryId, purchasePrice:purchase, sellingPrice:selling, mrp:mrp, stock:oldStock }, imageUrl); editingProductId=null; }
+        else { await addProduct({ name, category:selectedCategoryId, purchasePrice:purchase, sellingPrice:selling, mrp:mrp, stock:100 }, imageUrl); }
+        document.getElementById("prodName").value=""; document.getElementById("prodPurchasePrice").value=""; document.getElementById("prodSellingPrice").value=""; document.getElementById("prodMrp").value=""; document.getElementById("imgPreviewContainer").innerHTML=""; document.getElementById("prodImageFile").value="";
+        showToast("✅ Product saved!");
+        document.getElementById("addProductFormView").style.display="none";
+        document.getElementById("addProductInitialView").style.display="block";
+    };
+    document.getElementById("prodImageFile").onchange = e => { let f = e.target.files[0]; if(f){ let reader = new FileReader(); reader.onload = ev => document.getElementById("imgPreviewContainer").innerHTML = `<img src="${ev.target.result}" class="image-preview-sm">`; reader.readAsDataURL(f); } };
+    let selectedIcon = "📦";
+    const emojiList = ["🛠️","🔧","🔩","⚙️","🔨","🧰","⚡","🪜","🪓","⛏️","🗜️","🔌","🧲","🏗️"];
+    function buildIconGrid(){ let g=document.getElementById("iconGrid"); g.innerHTML=""; emojiList.forEach(icon=>{ let d=document.createElement("div"); d.className="icon-option"; if(icon===selectedIcon) d.classList.add("selected"); d.textContent=icon; d.addEventListener("click",()=>{ document.querySelectorAll("#iconGrid .icon-option").forEach(o=>o.classList.remove("selected")); d.classList.add("selected"); selectedIcon=icon; }); g.appendChild(d); }); }
+    window.openAddCategoryModal = () => { document.getElementById("newCategoryName").value=""; selectedIcon="📦"; buildIconGrid(); document.getElementById("categoryModal").style.display="flex"; };
+    window.closeCategoryModal = () => document.getElementById("categoryModal").style.display="none";
+    document.getElementById("saveCategoryBtn").onclick = () => { let n=document.getElementById("newCategoryName").value.trim(); if(!n) return showToast("Enter name"); let custom=document.getElementById("customIconInput").value.trim(); addCategory(n, custom||selectedIcon); closeCategoryModal(); };
+    document.getElementById("openCategoryBtn").onclick = openAddCategoryModal;
+    
+    // ===== SET TPIN - STYLISH =====
+    document.getElementById("setTpinBtn").onclick = async () => {
+        const result = await showTpinModal();
+        if (result.action === 'disable') {
+            localStorage.removeItem("aamir_tpin");
+            userTpin = null;
+            showToast('🔓 TPIN disabled');
+        } else if (result.action === 'set') {
+            localStorage.setItem("aamir_tpin", result.value);
+            userTpin = result.value;
+            showToast('✅ TPIN set successfully!');
+        }
+    };
+    
+    document.getElementById("enableFingerprintBtn").onclick = async () => { await registerFingerprint(); };
+    const unlockScr = document.getElementById("unlockScreen");
+    const fingerprintBtn = document.getElementById("fingerprintUnlockBtn");
+    function showUnlockIfNeeded() { if(userTpin) { unlockScr.style.display = "flex"; if(fingerprintEnabled) fingerprintBtn.style.display = "flex"; else fingerprintBtn.style.display = "none"; return new Promise(resolve => { pendingUnlockResolve = resolve; }); } return Promise.resolve(); }
+    document.getElementById("unlockSubmitBtn").onclick = () => { if(document.getElementById("unlockPinInput").value === userTpin){ document.getElementById("unlockError").innerText=""; unlockScr.style.display="none"; if(pendingUnlockResolve) pendingUnlockResolve(); } else document.getElementById("unlockError").innerText="Wrong TPIN / गलत TPIN"; };
+    fingerprintBtn.onclick = async () => { const success = await authenticateWithFingerprint(); if(success) { document.getElementById("unlockError").innerText=""; unlockScr.style.display="none"; if(pendingUnlockResolve) pendingUnlockResolve(); } else document.getElementById("unlockError").innerText="Fingerprint not recognized / फ़िंगरप्रिंट मेल नहीं खाता"; };
+    document.getElementById("searchInput").addEventListener('input', e => { searchQuery = e.target.value; renderHomeProducts(); });
+    document.getElementById("stockSearchInput").addEventListener('input', e => { stockSearch = e.target.value; renderStockList(); });
+    document.getElementById("fabBtn").onclick = () => { if(categories.length===0) showToast("Add a category first"); else { editingProductId=null; selectedCategoryId=null; document.getElementById("addProductInitialView").style.display="block"; document.getElementById("addProductCategoryView").style.display="none"; document.getElementById("addProductFormView").style.display="none"; switchScreen('addProduct'); } };
+    document.querySelectorAll('.nav-item').forEach(n => n.addEventListener('click', () => switchScreen(n.getAttribute('data-screen'))));
+    function escapeHtml(str) { return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]); }
+    
+    // ===== STYLISH TPIN MODAL FUNCTIONS =====
+    function showTpinModal() {
+        return new Promise((resolve) => {
+            tpinInput.value = '';
+            tpinError.textContent = '';
+            document.getElementById('tpinModal').classList.add('active');
+            tpinResolve = resolve;
+            setTimeout(() => tpinInput.focus(), 100);
+        });
+    }
+
+    function closeTpinModal(result) {
+        document.getElementById('tpinModal').classList.remove('active');
+        if (tpinResolve) {
+            tpinResolve(result);
+            tpinResolve = null;
+        }
+    }
+
+    let tpinResolve = null;
+    const tpinInput = document.getElementById('tpinInput');
+    const tpinError = document.getElementById('tpinError');
+
+    document.getElementById('tpinOkBtn').addEventListener('click', () => {
+        const val = tpinInput.value.trim();
+        if (val === '') {
+            closeTpinModal({ action: 'disable', value: '' });
+        } else if (/^\d{4,6}$/.test(val)) {
+            closeTpinModal({ action: 'set', value: val });
+        } else {
+            tpinError.textContent = '⚠️ Please enter 4-6 digits or leave empty';
+        }
+    });
+
+    document.getElementById('tpinCancelBtn').addEventListener('click', () => {
+        closeTpinModal({ action: 'cancel' });
+    });
+
+    tpinInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            document.getElementById('tpinOkBtn').click();
+        }
+        if (e.key === 'Escape') {
+            document.getElementById('tpinCancelBtn').click();
+        }
+        if (!/^[0-9]$/.test(e.key) && e.key !== 'Backspace' && e.key !== 'Delete' && e.key !== 'ArrowLeft' && e.key !== 'ArrowRight' && e.key !== 'Tab' && e.key !== 'Enter' && e.key !== 'Escape') {
+            e.preventDefault();
+        }
+    });
+
+    async function registerFingerprint() {
+        if (!window.PublicKeyCredential) { showToast("Fingerprint not supported"); return false; }
+        try {
+            const challenge = new Uint8Array(32);
+            window.crypto.getRandomValues(challenge);
+            const credential = await navigator.credentials.create({
+                publicKey: {
+                    challenge, rp: { name: "Noman Power Tools", id: location.hostname },
+                    user: { id: new Uint8Array(16), name: "aamir_user", displayName: "Aamir User" },
+                    pubKeyCredParams: [{ type: "public-key", alg: -7 }],
+                    authenticatorSelection: { authenticatorAttachment: "platform", userVerification: "required" },
+                    timeout: 60000
+                }
+            });
+            const credId = btoa(String.fromCharCode(...new Uint8Array(credential.rawId)));
+            localStorage.setItem("aamir_fingerprint_id", credId);
+            fingerprintCredentialId = credId;
+            fingerprintEnabled = true;
+            showToast("✅ Fingerprint registered!");
+            return true;
+        } catch (err) { showToast("Registration failed: " + err.message); return false; }
+    }
+    async function authenticateWithFingerprint() {
+        if (!fingerprintCredentialId) return false;
+        try {
+            const challenge = new Uint8Array(32);
+            window.crypto.getRandomValues(challenge);
+            const allowedCredential = { id: Uint8Array.from(atob(fingerprintCredentialId), c=>c.charCodeAt(0)), type: "public-key" };
+            const assertion = await navigator.credentials.get({ publicKey: { challenge, allowCredentials: [allowedCredential], userVerification: "required", timeout: 60000 } });
+            return !!assertion;
+        } catch (err) { return false; }
+    }
+
+    startFirestoreListener();
+    showUnlockIfNeeded().then(() => switchScreen('home'));
+
+    // ===== PWA INSTALL SUPPORT =====
+    let deferredInstallPrompt = null;
+    const pwaOverlay = document.getElementById('pwaInstallOverlay');
+    const pwaInstallConfirm = document.getElementById('pwaInstallConfirm');
+    const pwaInstallLater = document.getElementById('pwaInstallLater');
+    const runningStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+    const hidePwaInstall = () => { if (pwaOverlay) pwaOverlay.style.display = 'none'; };
+    const showPwaInstall = () => {
+        if (runningStandalone || localStorage.getItem('noman_pwa_prompt_dismissed') === '1' || !pwaOverlay) return;
+        pwaOverlay.style.display = 'flex';
+    };
+    window.addEventListener('beforeinstallprompt', (event) => {
+        event.preventDefault();
+        deferredInstallPrompt = event;
+        if (!runningStandalone) setTimeout(showPwaInstall, 1800);
+    });
+    pwaInstallConfirm?.addEventListener('click', async () => {
+        if (deferredInstallPrompt) {
+            deferredInstallPrompt.prompt();
+            try { await deferredInstallPrompt.userChoice; } catch (e) { /* user may close the native prompt */ }
+            deferredInstallPrompt = null;
+            hidePwaInstall();
+        } else {
+            hidePwaInstall();
+            alert('Chrome के ⋮ मेनू में “Install app” या “Add to Home screen” चुनें। यदि विकल्प नहीं दिखता, तो वेबसाइट HTTPS पर खोलें और Chrome अपडेट करें।');
+        }
+    });
+    pwaInstallLater?.addEventListener('click', () => {
+        localStorage.setItem('noman_pwa_prompt_dismissed', '1');
+        hidePwaInstall();
+    });
+    pwaOverlay?.addEventListener('click', (event) => { if (event.target === pwaOverlay) hidePwaInstall(); });
+    window.addEventListener('appinstalled', () => {
+        hidePwaInstall();
+        localStorage.setItem('noman_pwa_prompt_dismissed', '1');
+        deferredInstallPrompt = null;
+    });
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js').catch(err => console.error('Service worker registration failed:', err));
+        });
+    }
+
+</script>
+</body>
+</html>
